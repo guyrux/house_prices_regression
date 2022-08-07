@@ -1,5 +1,6 @@
 # %%
-from click import FileError
+import os
+
 from dynaconf import Dynaconf
 import pandas as pd
 import streamlit as st
@@ -9,10 +10,12 @@ from src.data.make_dataprep import verify_data_type
 from src.visualization.visualize import make_boxplot, make_scatterplot, make_violinplot
 
 
-config = Dynaconf(settings_files=["settings.toml"])
+config = Dynaconf(settings_files=['settings.toml'], load_dotenv=True, envvar_prefix=False)
+
+# print(os.getenv('AWS_ACCESS_KEY_ID'))
 
 logger = get_logger(config.get('LOG_FILE', './log/file.log'))
-
+# %%
 try:
     x_train = pd.read_parquet(
         config.get('INTERIM_FOLDER', './data/interim/') + \
@@ -22,7 +25,7 @@ try:
         config.get('Y_TRAIN', 'y_train_3rd_dataprep.pqt'))
     df = pd.concat([x_train, y_train], axis=1)
     logger.debug('x_train loaded')
-except FileError:
+except:
     logger.error('Error during X_train loading.')
 
 # %%
